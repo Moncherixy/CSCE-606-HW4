@@ -25,11 +25,13 @@ class MoviesController < ApplicationController
       @selected_ratings = Hash[@all_ratings.map {|rating| [rating, rating]}]
     end
     
+    
     if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
       session[:sort] = sort
       session[:ratings] = @selected_ratings
       redirect_to :sort => sort, :ratings => @selected_ratings and return
     end
+    
     @movies = Movie.where(rating: @selected_ratings.keys).order(ordering)
   end
 
@@ -44,6 +46,7 @@ class MoviesController < ApplicationController
   end
 
   def edit
+    #debugger
     @movie = Movie.find params[:id]
   end
 
@@ -62,13 +65,14 @@ class MoviesController < ApplicationController
   end
 
   def find_similar_movies
+    # debugger
     @movie = Movie.find(params[:id])
-    dir = @movie.director
-    if dir.nil? or dir.empty?
+    director = @movie.director
+    if director.nil? or director.empty?
       flash[:notice] = "'#{@movie.title}' has no director info."
       redirect_to movies_path
     else
-      @movies = Movie.same_directors(dir)
+      @movies = Movie.same_directors(director)
     end
   end
 end
